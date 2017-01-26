@@ -37,7 +37,9 @@ function dataLoaded(err,trips,stations){
 		registeredTrips = tripsByType.filter('Registered').top(Infinity),
 		casualTrips = tripsByType.filter('Casual').top(Infinity);
 
-	
+	d3.select('#plot-1').datum(allTrips).call(Timeseries);
+	d3.select('#plot-2').datum(registeredTrips).call(Timeseries);
+	d3.select('#plot-3').datum(casualTrips).call(Timeseries);
 }
 
 function parseTrips(d){

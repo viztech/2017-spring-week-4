@@ -8,10 +8,20 @@ body{
 }
 
 .plot{
-	min-height:300px;
-	background:yellow;
+	min-height:250px;
 }
 .plot-col-4{
 	width:33%;
 	float:left;
 }
+
+.time-series{}
+	.time-series .area{ fill-opacity:.6; }
+	.time-series .line{ 
+		fill:none; 
+		stroke:none;
+		stroke-width:1.5px;
+	}
+	.time-series .axis-y line{ stroke:white; opacity:.7;}
+	.time-series .axis .domain{ display:none; }
+	.time-series .axis text{ fill:rgb(80,80,80); }
