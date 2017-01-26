@@ -11,12 +11,12 @@ body{
 	min-height:250px;
 }
 .plot-col-4{
-	width:33%;
+	width:100%;
 	float:left;
 }
 
 .time-series{}
-	.time-series .area{ fill-opacity:.6; }
+	.time-series .area{ fill-opacity:.75; }
 	.time-series .line{ 
 		fill:none; 
 		stroke:none;

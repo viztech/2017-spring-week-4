@@ -6,29 +6,6 @@ d3.queue()
 	.await(dataLoaded);
 
 function dataLoaded(err,trips,stations){
-	/*
-	//First, let's look at an example of what a module needs to do, taking the example of the axis generators
-	//You can create a new module generator by calling a function
-	var axisX = d3.axisBottom();
-
-	//You can define some custom properties for the module
-	axisX
-		.ticks(10)
-		.scale(someScale)
-		.tickSize(10);
-
-	//Finally, you can call this module generator function, passing in a selection
-	plot.append('g').attr('class','axis-x')
-		.call(axisX);
-
-	//You can modify the properties of this module generator
-	axisX
-		.ticks(20);
-
-	plot.select('.axis-x')
-		.transition()
-		.call(axisX);
-	*/
 
 	var cf = crossfilter(trips);
 	var tripsByType = cf.dimension(function(d){return d.userType});
@@ -42,13 +19,36 @@ function dataLoaded(err,trips,stations){
 		var timeseries = Timeseries() //create a module generator function
 		timeseries.domainX([extent])
 		timeseries.value([accessor])
-		timeseries.thresholds([array])
+		timeseries.interval([timeInterval])
 		timeseries.margin([object])
 		timeseries.domainY([extent])
 */
-	d3.select('#plot-1').datum(allTrips).call(Timeseries);
-	d3.select('#plot-2').datum(registeredTrips).call(Timeseries);
-	d3.select('#plot-3').datum(casualTrips).call(Timeseries);
+	var timeseriesAll = Timeseries();
+
+	d3.select('#plot-1').datum(allTrips).call(timeseriesAll);
+	d3.select('#plot-2').datum(allTrips).call(
+		timeseriesAll
+			.interval(d3.timeWeek)
+			.domainY([0,3000])
+	);
+	d3.select('#plot-3').datum(allTrips).call(
+		timeseriesAll
+			.value(function(d){return d.endTime})
+	);
+
+	d3.select('#plot-4').datum(allTrips).call(
+		Timeseries()
+			.domainX([new Date(2011,0,1), new Date(2011,11,31)])
+	);
+	d3.select('#plot-5').datum(allTrips).call(
+		Timeseries()
+			.domainX([new Date(2012,0,1), new Date(2012,11,31)])
+	);
+	d3.select('#plot-6').datum(allTrips).call(
+		Timeseries()
+			.domainX([new Date(2013,0,1), new Date(2013,11,31)])
+	);
+
 }
 
 function parseTrips(d){
