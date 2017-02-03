@@ -13,7 +13,10 @@ function Timeseries(){
 		interval = d3.timeDay,
 		valueAccessor = function(d){
 			return d.startTime;
-		};
+		},
+		scaleX,
+		scaleY = d3.scaleLinear(),
+		thresholds = [];
 
 	var exports = function(selection){
 		//new selection will possibly have different dimensions
@@ -22,17 +25,27 @@ function Timeseries(){
 		H = selection.node().clientHeight - M.t - M.b;
 		arr = selection.datum();
 
+		//Set up scaleX and scaleY
+		if(scaleX){
+			//If scaleX is custom-configured
+			domainX = scaleX.domain();
+			scaleX.range([0,W]);
+		}else{
+			scaleX = d3.scaleTime().domain(domainX).range([0,W]);
+		}
+
+		scaleY
+			.domain(domainY)
+			.range([H,0]);
+
 		//Histogram layout
 		//The value, domain and threshold properties are internal to this function
 		histogram
 			.value(valueAccessor)
 			.domain(domainX)
-			.thresholds(interval.range(domainX[0],domainX[1],1));
+			.thresholds(thresholds?thresholds:interval.range(domainX[0],domainX[1],1));
 
 		var dayBins = histogram(arr);
-
-		var scaleX = d3.scaleTime().domain(domainX).range([0,W]),
-			scaleY = d3.scaleLinear().domain(domainY).range([H,0]);
 
 		//Represent
 		//Axis, line and area generators
@@ -45,11 +58,11 @@ function Timeseries(){
 			.y1(function(d){return scaleY(d.length)});
 		var axisX = d3.axisBottom()
 			.scale(scaleX)
-			.ticks(d3.timeMonth.every(6));
+			//.ticks(d3.timeMonth.every(6));
 		var axisY = d3.axisLeft()
 			.tickSize(-W)
 			.scale(scaleY)
-			.ticks(4);
+			.ticks(3);
 
 		//Set up the DOM structure like so:
 		/*
@@ -120,6 +133,18 @@ function Timeseries(){
 		domainY = _;
 		return this;
 	}
+	exports.scaleX = function(_){
+		if(!arguments.length) return scaleX;
+		scaleX = _;
+		return this;
+	}
+	exports.thresholds = function(_){
+		if(!arguments.length) return thresholds;
+		thresholds = _;
+		return this;
+	}
+
+
 
 	return exports;
 }

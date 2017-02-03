@@ -8,47 +8,22 @@ d3.queue()
 function dataLoaded(err,trips,stations){
 
 	var cf = crossfilter(trips);
-	var tripsByType = cf.dimension(function(d){return d.userType});
+	var tripsByDay = cf.dimension(function(d){return d.startTime.getDay()});
 
-	var allTrips = tripsByType.filter(null).top(Infinity),
-		registeredTrips = tripsByType.filter('Registered').top(Infinity),
-		casualTrips = tripsByType.filter('Casual').top(Infinity);
+	//Timeseries module
+	var t = Timeseries()
+		.scaleX(d3.scaleLinear().domain([0,24]))
+		.domainY([0,400])
+		.thresholds(d3.range(0,24,1/12))
+		.value(function(d){return d.startTime.getHours() + d.startTime.getMinutes()/60; });
 
-/*	Convert Timeseries to a reusable module
-	Desired API
-		var timeseries = Timeseries() //create a module generator function
-		timeseries.domainX([extent])
-		timeseries.value([accessor])
-		timeseries.interval([timeInterval])
-		timeseries.margin([object])
-		timeseries.domainY([extent])
-*/
-	var timeseriesAll = Timeseries();
-
-	d3.select('#plot-1').datum(allTrips).call(timeseriesAll);
-	d3.select('#plot-2').datum(allTrips).call(
-		timeseriesAll
-			.interval(d3.timeWeek)
-			.domainY([0,3000])
-	);
-	d3.select('#plot-3').datum(allTrips).call(
-		timeseriesAll
-			.value(function(d){return d.endTime})
-	);
-
-	d3.select('#plot-4').datum(allTrips).call(
-		Timeseries()
-			.domainX([new Date(2011,0,1), new Date(2011,11,31)])
-	);
-	d3.select('#plot-5').datum(allTrips).call(
-		Timeseries()
-			.domainX([new Date(2012,0,1), new Date(2012,11,31)])
-	);
-	d3.select('#plot-6').datum(allTrips).call(
-		Timeseries()
-			.domainX([new Date(2013,0,1), new Date(2013,11,31)])
-	);
-
+	[0,1,2,3,4,5,6].forEach(function(day){
+		d3.select('.container')
+			.append('div')
+			.attr('class','plot plot-col-4')
+			.datum(tripsByDay.filter(day).top(Infinity))
+			.call(t);
+	});
 }
 
 function parseTrips(d){

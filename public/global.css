@@ -8,10 +8,10 @@ body{
 }
 
 .plot{
-	min-height:250px;
+	min-height:140px;
 }
 .plot-col-4{
-	width:100%;
+	width:60%;
 	float:left;
 }
 
